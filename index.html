@@ -307,6 +307,14 @@
             z-index: 1000;
         }
         
+        .info-box {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
         @media (max-width: 900px) {
             .main-content {
                 flex-direction: column;
@@ -325,6 +333,10 @@
             <div class="form-section">
                 <h2>Configuration de votre vidéo</h2>
                 <p>Remplissez les détails pour générer votre publicité</p>
+                
+                <div class="info-box">
+                    <p><strong>Note :</strong> Cette démo utilise une vidéo d'exemple intégrée. Pour une utilisation réelle, vous devrez connecter votre catalogue produits.</p>
+                </div>
                 
                 <div class="form-group">
                     <label for="website-url">URL de votre site web</label>
@@ -547,14 +559,17 @@
             document.getElementById('download-btn').style.display = 'block';
             
             videoGenerated = true;
-            showNotification('Vidéo générée avec succès!');
+            showNotification('Vidéo générée avec succès! Cliquez sur play pour la visualiser.');
             
             // Attendre que la vidéo soit chargée avant de pouvoir la lire
             videoElement.addEventListener('loadeddata', function() {
-                videoElement.play().catch(error => {
-                    console.log('La lecture automatique a été bloquée:', error);
-                    // Cela est normal sur certains navigateurs
-                });
+                // La vidéo est prête, on peut l'afficher
+                console.log('Vidéo chargée avec succès');
+            });
+            
+            videoElement.addEventListener('error', function(e) {
+                console.error('Erreur de chargement vidéo:', videoElement.error);
+                showNotification('Erreur lors du chargement de la vidéo');
             });
         }
         
@@ -658,7 +673,7 @@
         // Gérer les erreurs de vidéo
         videoElement.addEventListener('error', function(e) {
             console.error('Erreur vidéo:', videoElement.error);
-            showNotification('Erreur de chargement de la vidéo');
+            showNotification('Erreur de chargement de la vidéo. Veuillez réessayer.');
         });
         
         // Initialisation
