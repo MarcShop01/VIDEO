@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Vidéos Publicitaires</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: flex;
+            padding: 0;
+        }
+        
+        .form-section {
+            flex: 1;
+            padding: 30px;
+            background: var(--light);
+        }
+        
+        .preview-section {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #f0f4ff;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .platform-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .platform-option {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .platform-option:hover {
+            border-color: var(--primary);
+        }
+        
+        .platform-option.selected {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.1);
+        }
+        
+        .platform-option i {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #3aa5d3;
+        }
+        
+        .video-preview {
+            width: 100%;
+            max-width: 400px;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        #preview-video {
+            width: 100%;
+            display: block;
+        }
+        
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .preview-placeholder {
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #aaa;
+            text-align: center;
+            flex-direction: column;
+        }
+        
+        .preview-placeholder i {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+        
+        .preview-controls {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            flex: 1;
+        }
+        
+        .btn-secondary:hover {
+            background: #f0f4ff;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background: #ddd;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 40px;
+            justify-content: center;
+        }
+        
+        .feature-card {
+            flex: 1;
+            min-width: 250px;
+            max-width: 350px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            margin-top: 20px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: var(--success);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Générateur de Vidéos Publicitaires</h1>
+            <p class="subtitle">Créez des publicités vidéo attrayantes pour vos produits en quelques clics</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="form-section">
+                <h2>Configuration de votre vidéo</h2>
+                <p>Remplissez les détails pour générer votre publicité</p>
+                
+                <div class="form-group">
+                    <label for="website-url">URL de votre site web</label>
+                    <input type="url" id="website-url" placeholder="https://www.monsite.com" value="https://monsite.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="product-category">Catégorie de produits</label>
+                    <select id="product-category">
+                        <option value="mode">Mode et vêtements</option>
+                        <option value="technologie">Technologie et électronique</option>
+                        <option value="beaute">Beauté et cosmétiques</option>
+                        <option value="maison">Maison et décoration</option>
+                        <option value="sport">Sport et loisirs</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Sélectionnez la plateforme</label>
+                    <div class="platform-options">
+                        <div class="platform-option" onclick="selectPlatform(this, 'facebook')">
+                            <i class="fab fa-facebook"></i>
+                            <span>Facebook</span>
+                        </div>
+                        <div class="platform-option" onclick="selectPlatform(this, 'instagram')">
+                            <i class="fab fa-instagram"></i>
+                            <span>Instagram</span>
+                        </div>
+                        <div class="platform-option" onclick="selectPlatform(this, 'tiktok')">
+                            <i class="fab fa-tiktok"></i>
+                            <span>TikTok</span>
+                        </div>
+                        <div class="platform-option" onclick="selectPlatform(this, 'youtube')">
+                            <i class="fab fa-youtube"></i>
+                            <span>YouTube</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="video-style">Style de vidéo</label>
+                    <select id="video-style">
+                        <option value="modern">Moderne et épuré</option>
+                        <option value="dynamic">Dynamique et énergique</option>
+                        <option value="elegant">Élégant et sophistiqué</option>
+                        <option value="minimalist">Minimaliste</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="product-count">Nombre de produits à mettre en avant</label>
+                    <input type="number" id="product-count" min="1" max="10" value="3">
+                </div>
+                
+                <div class="progress-container" id="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                
+                <button class="btn" id="generate-btn" onclick="generateVideo()">
+                    <i class="fas fa-film"></i> Générer la vidéo
+                </button>
+            </div>
+            
+            <div class="preview-section">
+                <h2>Aperçu de votre publicité</h2>
+                <div class="video-preview">
+                    <div class="preview-placeholder" id="preview-placeholder">
+                        <i class="fas fa-video"></i>
+                        <p>Aperçu de la vidéo</p>
+                        <p>Votre vidéo s'affichera ici après génération</p>
+                    </div>
+                    <video id="preview-video" controls style="display:none;">
+                        <source id="video-source" type="video/mp4">
+                        Votre navigateur ne supporte pas la lecture de vidéos.
+                    </video>
+                    <div class="video-controls" style="display:none;" id="video-controls">
+                        <button class="control-btn" onclick="playPause()">
+                            <i class="fas fa-play" id="play-icon"></i>
+                        </button>
+                        <button class="control-btn" onclick="restartVideo()">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <button class="control-btn" onclick="downloadVideo()">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="control-btn" onclick="shareVideo()">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="preview-controls">
+                    <button class="btn btn-secondary" onclick="editVideo()">
+                        <i class="fas fa-edit"></i> Modifier
+                    </button>
+                    <button class="btn btn-success" id="download-btn" onclick="downloadVideo()" style="display:none;">
+                        <i class="fas fa-download"></i> Télécharger
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                <h3>Génération automatique</h3>
+                <p>Créez des vidéos publicitaires en quelques minutes à partir de votre catalogue produits</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-paint-brush"></i></div>
+                <h3>Personnalisation avancée</h3>
+                <p>Choisissez parmi différents styles et formats adaptés à chaque plateforme</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                <h3>Optimisation pour la conversion</h3>
+                <p>Des templates conçus pour maximiser l'engagement et les conversions</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i> <span id="notification-text"></span>
+    </div>
+    
+    <footer>
+        <p>© 2023 Générateur de Vidéos Publicitaires. Tous droits réservés.</p>
+    </footer>
+
+    <script>
+        let selectedPlatform = null;
+        let videoGenerated = false;
+        const videoElement = document.getElementById('preview-video');
+        const videoSource = document.getElementById('video-source');
+        
+        // Vidéo d'exemple intégrée en base64 (très courte pour ne pas alourdir le code)
+        const sampleVideoBase64 = "data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAQCtttZGF0AAAAsAAAAIAAAAwQAAAUAAABALAAAAAAABBnbHlmAAAIAAAADB0aGVyZAACAG0AAAAYcGl4aQAAAAAcaXB0YQAAAGIAAAAYZGF0YQAAAAAAAAC8AAAAvHVhZWQAAAC8AAAAvY3B0YQAAAAAAAQcAAAAgdmNndAAAAAEAAAAwY2hhZAAAAAwAAAA8YlZjZAAAAQAAAAA8ZGF0YQAAAAEAAAA8Ymd0YQAAAAAAAQcAAAAgZnJlcwAAAAgAAAAgZ3B0YQAAAAAAAQcAAAAg";
+        
+        // Pour une solution réelle, vous utiliseriez des URLs vers vos propres vidéos
+        const sampleVideos = {
+            mode: sampleVideoBase64,
+            technologie: sampleVideoBase64,
+            beaute: sampleVideoBase64,
+            maison: sampleVideoBase64,
+            sport: sampleVideoBase64
+        };
+        
+        function selectPlatform(element, platform) {
+            // Remove selected class from all options
+            document.querySelectorAll('.platform-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+            selectedPlatform = platform;
+        }
+        
+        function generateVideo() {
+            const websiteUrl = document.getElementById('website-url').value;
+            const videoStyle = document.getElementById('video-style').value;
+            const productCount = document.getElementById('product-count').value;
+            const productCategory = document.getElementById('product-category').value;
+            
+            if (!websiteUrl) {
+                showNotification('Veuillez entrer l\'URL de votre site web');
+                return;
+            }
+            
+            if (!selectedPlatform) {
+                showNotification('Veuillez sélectionner une plateforme');
+                return;
+            }
+            
+            // Show progress bar
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress-bar');
+            const generateBtn = document.getElementById('generate-btn');
+            
+            progressContainer.style.display = 'block';
+            generateBtn.disabled = true;
+            
+            // Simulate video generation progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                progressBar.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        completeVideoGeneration(websiteUrl, videoStyle, productCount, productCategory);
+                    }, 500);
+                }
+            }, 100);
+        }
+        
+        function completeVideoGeneration(websiteUrl, videoStyle, productCount, productCategory) {
+            // Hide progress bar and show success
+            const progressContainer = document.getElementById('progress-container');
+            const generateBtn = document.getElementById('generate-btn');
+            
+            progressContainer.style.display = 'none';
+            generateBtn.disabled = false;
+            
+            // Use a sample video based on category
+            const videoSrc = sampleVideos[productCategory] || sampleVideos.mode;
+            
+            // Update video element
+            videoSource.src = videoSrc;
+            videoElement.load(); // Recharger la vidéo avec la nouvelle source
+            
+            videoElement.style.display = 'block';
+            document.getElementById('preview-placeholder').style.display = 'none';
+            document.getElementById('video-controls').style.display = 'flex';
+            document.getElementById('download-btn').style.display = 'block';
+            
+            videoGenerated = true;
+            showNotification('Vidéo générée avec succès!');
+            
+            // Attendre que la vidéo soit chargée avant de pouvoir la lire
+            videoElement.addEventListener('loadeddata', function() {
+                videoElement.play().catch(error => {
+                    console.log('La lecture automatique a été bloquée:', error);
+                    // Cela est normal sur certains navigateurs
+                });
+            });
+        }
+        
+        function playPause() {
+            const playIcon = document.getElementById('play-icon');
+            if (videoElement.paused) {
+                videoElement.play().catch(error => {
+                    console.error("Erreur de lecture:", error);
+                    showNotification('Erreur lors de la lecture de la vidéo');
+                });
+                playIcon.classList.remove('fa-play');
+                playIcon.classList.add('fa-pause');
+            } else {
+                videoElement.pause();
+                playIcon.classList.remove('fa-pause');
+                playIcon.classList.add('fa-play');
+            }
+        }
+        
+        function restartVideo() {
+            videoElement.currentTime = 0;
+            videoElement.play().catch(error => {
+                console.error("Erreur de lecture:", error);
+                showNotification('Erreur lors de la lecture de la vidéo');
+            });
+            document.getElementById('play-icon').classList.remove('fa-play');
+            document.getElementById('play-icon').classList.add('fa-pause');
+        }
+        
+        function downloadVideo() {
+            if (!videoGenerated) {
+                showNotification('Veuillez générer une vidéo d\'abord');
+                return;
+            }
+            
+            showNotification('Téléchargement de la vidéo...');
+            
+            // Dans une vraie application, vous auriez un vrai fichier vidéo à télécharger
+            // Pour cette démo, nous allons simuler le téléchargement
+            setTimeout(() => {
+                showNotification('Vidéo téléchargée avec succès!');
+                
+                // Créer un lien de téléchargement
+                const a = document.createElement('a');
+                a.href = videoSource.src;
+                a.download = 'ma-publicite.mp4';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }, 2000);
+        }
+        
+        function shareVideo() {
+            if (!videoGenerated) {
+                showNotification('Veuillez générer une vidéo d\'abord');
+                return;
+            }
+            
+            showNotification('Partage de la vidéo sur ' + selectedPlatform + '...');
+            
+            // Simuler le partage sur les réseaux sociaux
+            const shareUrls = {
+                facebook: 'https://www.facebook.com/sharer/sharer.php?u=',
+                instagram: 'https://www.instagram.com/',
+                tiktok: 'https://www.tiktok.com/upload?lang=fr',
+                youtube: 'https://www.youtube.com/upload'
+            };
+            
+            setTimeout(() => {
+                window.open(shareUrls[selectedPlatform], '_blank');
+            }, 1000);
+        }
+        
+        function editVideo() {
+            showNotification('Mode édition activé');
+        }
+        
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = message;
+            notification.style.display = 'flex';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Initialize video event listeners
+        videoElement.addEventListener('play', function() {
+            document.getElementById('play-icon').classList.remove('fa-play');
+            document.getElementById('play-icon').classList.add('fa-pause');
+        });
+        
+        videoElement.addEventListener('pause', function() {
+            document.getElementById('play-icon').classList.remove('fa-pause');
+            document.getElementById('play-icon').classList.add('fa-play');
+        });
+        
+        // Gérer les erreurs de vidéo
+        videoElement.addEventListener('error', function(e) {
+            console.error('Erreur vidéo:', videoElement.error);
+            showNotification('Erreur de chargement de la vidéo');
+        });
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sélectionner Facebook par défaut
+            document.querySelector('.platform-option:nth-child(1)').classList.add('selected');
+            selectedPlatform = 'facebook';
+        });
+    </script>
+</body>
+</html>
